@@ -15,3 +15,4 @@
 *.war
 *.pyc
 build
+/.nb-gradle/private/
