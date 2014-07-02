@@ -5,34 +5,41 @@
  */
 package com.intenthq.horseracing.command;
 
+import com.intenthq.horseracing.common.AssertionConcern;
+
 /**
- *
+ * Command for organizing a race
  * @author alexp
  */
-public class OrganizeRaceCommand {
+public class OrganizeRaceCommand extends AssertionConcern {
 
+    // Number of yards for the race
     private Integer length;
+    // Types of holes configuration for the race
     private Integer[] holeTypes;
-    private String[] horses;
+    // Maximum number of lanes
+    private Integer maxNoOfLanes;
 
-    public OrganizeRaceCommand(Integer length, Integer[] holeTypes, String[] horses) {
-        // list of hole types
-        // list of horses
+    public OrganizeRaceCommand(Integer length, Integer[] holeTypes, Integer maxNoOfLanes) {
+        assertPositiveInteger(length, OrganizeRaceCommand.class.getSimpleName() + ".length is mandatory and greater than 0!");
+        assertArrayNotEmpty(holeTypes, OrganizeRaceCommand.class.getSimpleName() + ".holeTypes cannot be empty!");
+        assertPositiveInteger(maxNoOfLanes, OrganizeRaceCommand.class.getSimpleName() + ".maxNoOfLanes is mandatory and greater than 0!");
+
         this.length = length;
         this.holeTypes = holeTypes;
-        this.horses = horses;
+        this.maxNoOfLanes = maxNoOfLanes;
     }
 
     public Integer getLength() {
         return length;
     }
 
-    public String[] getHorses() {
-        return horses;
-    }
-
     public Integer[] getHoleTypes() {
         return holeTypes;
+    }
+
+    public Integer getMaxNoOfLanes() {
+        return maxNoOfLanes;
     }
 
 }

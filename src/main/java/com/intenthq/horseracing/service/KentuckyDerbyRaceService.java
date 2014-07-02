@@ -6,10 +6,11 @@
 package com.intenthq.horseracing.service;
 
 import com.intenthq.horseracing.command.BallThrowCommand;
+import com.intenthq.horseracing.command.InitiateRaceCommand;
 import com.intenthq.horseracing.command.OrganizeRaceCommand;
 import com.intenthq.horseracing.domain.HoleType;
 import com.intenthq.horseracing.domain.Horse;
-import com.intenthq.horseracing.domain.LaneStatus;
+import com.intenthq.horseracing.domain.HorseRaceStatus;
 import com.intenthq.horseracing.domain.Race;
 import com.intenthq.horseracing.repository.RaceNotFoundException;
 import com.intenthq.horseracing.repository.RaceRepository;
@@ -45,11 +46,31 @@ public class KentuckyDerbyRaceService implements RaceService {
     @Override
     public String organize(OrganizeRaceCommand command) {
         String raceId = this.raceRepository().nextIdentity();
-        Race race = new Race(raceId, getHoleTypes(command.getHoleTypes()), getParticipants(command.getHorses()), command.getLength());
+        Race race = new Race(raceId, getHoleTypes(command.getHoleTypes()), command.getMaxNoOfLanes(), command.getLength());
         this.raceRepository().save(race);
         return raceId;
     }
 
+    @Override
+    public boolean initiateRace(InitiateRaceCommand command) {
+        try {
+            Race race = this.raceRepository().getRace(command.getRaceId());
+            if (!race.isRaceOver()) {
+                return race.initiateRace(getParticipants(command.getHorses()));
+            } else {
+                return false;
+            }
+        } catch (RaceNotFoundException ex) {
+            System.out.println(ex.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     An array of integer values is converted into a list of HoleType
+     @param aHoleTypes
+     @return
+     */
     private Set<HoleType> getHoleTypes(Integer[] aHoleTypes) {
         Set<HoleType> holeTypes = new LinkedHashSet<>();
         for (Integer iHoleType : aHoleTypes) {
@@ -61,13 +82,19 @@ public class KentuckyDerbyRaceService implements RaceService {
         return holeTypes;
     }
 
+    /**
+     Transforming the list of horses into a map of lanes: number of lane to horse
+     In a more advanced scenario, the horses could be brought from a HorseRepository based on their names
+     @param horses
+     @return
+     */
     private Map<Integer, Horse> getParticipants(String[] horses) {
         // get Horses from HorseRepository by horseId
         Map<Integer, Horse> participantsOnLane = new LinkedHashMap<>();
-        int lane = 1;
+        int lane = 0;
         for (String horseName : horses) {
             Horse horse = new Horse(horseName);
-            participantsOnLane.put(lane++, horse);
+            participantsOnLane.put(++lane, horse);
         }
         return participantsOnLane;
     }
@@ -96,7 +123,7 @@ public class KentuckyDerbyRaceService implements RaceService {
             } else {
                 StringBuilder sb = new StringBuilder("Position, Lane, Horse name\n");
                 int i = 0;
-                for (LaneStatus laneStatus : race.results()) {
+                for (HorseRaceStatus laneStatus : race.results()) {
                     sb.append(++i).append(", ");
                     sb.append(laneStatus.getLaneNumber()).append(", ");
                     sb.append(laneStatus.getHorse().getName());

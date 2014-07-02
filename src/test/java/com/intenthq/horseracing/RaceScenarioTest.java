@@ -1,6 +1,7 @@
 package com.intenthq.horseracing;
 
 import com.intenthq.horseracing.command.BallThrowCommand;
+import com.intenthq.horseracing.command.InitiateRaceCommand;
 import com.intenthq.horseracing.command.OrganizeRaceCommand;
 import com.intenthq.horseracing.repository.RaceInMemoryRepository;
 import com.intenthq.horseracing.service.KentuckyDerbyRaceService;
@@ -34,6 +35,7 @@ public class RaceScenarioTest {
             + "4, 5, Spirit\n"
             + "5, 2, Dakota";
     private static final Integer FURLONG = 220;
+    private static final Integer MAX_NO_OF_LANES = 7;
 
     @Before
     public void setUp() throws Exception {
@@ -43,7 +45,8 @@ public class RaceScenarioTest {
     @Test
     public void testRaceScenario() throws Exception {
         String[] horses = SAMPLE_INPUT.split("\\n")[0].split(", ");
-        String raceId = raceService.organize(new OrganizeRaceCommand(FURLONG, HOLE_TYPES, horses));
+        String raceId = raceService.organize(new OrganizeRaceCommand(FURLONG, HOLE_TYPES, MAX_NO_OF_LANES));
+        raceService.initiateRace(new InitiateRaceCommand(raceId, horses));
         String[] ballthrows = SAMPLE_INPUT.split("\\n");
         int i = 1;
         boolean updateOk = true;

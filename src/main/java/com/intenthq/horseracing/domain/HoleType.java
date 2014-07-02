@@ -6,7 +6,7 @@
 package com.intenthq.horseracing.domain;
 
 /**
- *
+ * The hole types
  * @author alexp
  */
 public enum HoleType {

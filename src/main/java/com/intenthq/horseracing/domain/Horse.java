@@ -8,7 +8,7 @@ package com.intenthq.horseracing.domain;
 import java.util.Objects;
 
 /**
- *
+ * Domain modeling a Horse
  * @author alexp
  */
 public class Horse {

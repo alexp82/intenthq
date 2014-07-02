@@ -5,6 +5,7 @@
  */
 package com.intenthq.horseracing.domain;
 
+import com.intenthq.horseracing.common.AssertionConcern;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,30 +15,48 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- *
+ * Domain modeling the Race
  * @author alexp
  */
-public class Race {
+public class Race extends AssertionConcern {
 
+    // Race identifier
     private String raceId;
+    // Configuration - types of holes used
     private Set<HoleType> holeTypes;
-    private Map<Integer, LaneStatus> lanesStatus = new LinkedHashMap<>();
+    // Configuration - maximum number of lanes
+    private Integer maxNoOfLanes;
+    // Current status of horses during the race
+    private Map<Integer, HorseRaceStatus> lanesStatus = new LinkedHashMap<>();
+    // Configuration - the race length in yards
     private Integer length;
+    // Race status
     private boolean raceOver;
 
-    public Race(String raceId, Set<HoleType> holeTypes, Map<Integer, Horse> laneHorses, Integer lenght) {
+    public Race(String raceId, Set<HoleType> holeTypes, Integer maxNoOfLanes, Integer length) {
+        assertArgumentNotEmpty(raceId, Race.class.getSimpleName() + ".raceId is mandatory!");
+        assertCollectionNotEmpty(holeTypes, Race.class.getSimpleName() + ".holeTypes is mandatory!");
+        assertPositiveInteger(maxNoOfLanes, Race.class.getSimpleName() + ".maxNoOfLanes is mandatory!");
+        assertPositiveInteger(length, Race.class.getSimpleName() + ".length is mandatory!");
         this.raceId = raceId;
         this.holeTypes = holeTypes;
-        this.length = lenght;
-        for (Integer lane : laneHorses.keySet()) {
-            lanesStatus.put(lane, new LaneStatus(lane, laneHorses.get(lane)));
+        this.maxNoOfLanes = maxNoOfLanes;
+        this.length = length;
+    }
+
+    public boolean initiateRace(Map<Integer, Horse> laneHorses) {
+        assertMapNotEmpty(laneHorses, Race.class.getSimpleName() + " - setting laneHorses is mandatory");
+        if (laneHorses.size() > maxNoOfLanes) {
+            throw new IllegalArgumentException("Too many horses. Maximum allowed number of horses is " + maxNoOfLanes);
         }
+        for (Integer lane : laneHorses.keySet()) {
+            lanesStatus.put(lane, new HorseRaceStatus(lane, laneHorses.get(lane)));
+        }
+        return true;
     }
 
     public boolean updateRace(Integer lane, HoleType hole) {
-        if (lane == null) {
-            throw new IllegalArgumentException("Setting a Horse is mandatory!");
-        }
+        assertPositiveInteger(lane, Race.class.getSimpleName() + " - updateRace: lane is mandatory!");
         if (hole == null) {
             throw new IllegalArgumentException("Setting the hole is mandatory!");
         }
@@ -60,17 +79,17 @@ public class Race {
         return true;
     }
 
-    public List<LaneStatus> results() {
+    public List<HorseRaceStatus> results() {
         if (lanesStatus == null || lanesStatus.isEmpty()) {
             throw new IllegalStateException("Lanes should be configured");
         }
-        List<LaneStatus> lanes = new ArrayList<>();
+        List<HorseRaceStatus> lanes = new ArrayList<>();
         if (isRaceOver()) {
             lanes.addAll(lanesStatus.values());
-            Collections.sort(lanes, Collections.reverseOrder(new Comparator<LaneStatus>() {
+            Collections.sort(lanes, Collections.reverseOrder(new Comparator<HorseRaceStatus>() {
 
                 @Override
-                public int compare(LaneStatus o1, LaneStatus o2) {
+                public int compare(HorseRaceStatus o1, HorseRaceStatus o2) {
                     if (o1 != null && o2 != null && o1.getYards() != null && o2.getYards() != null) {
                         return o1.getYards().compareTo(o2.getYards());
                     }
