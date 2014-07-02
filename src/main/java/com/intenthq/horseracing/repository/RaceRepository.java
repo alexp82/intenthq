@@ -8,7 +8,7 @@ package com.intenthq.horseracing.repository;
 import com.intenthq.horseracing.domain.Race;
 
 /**
- *
+ * Race repository interface - supporting basic CRUD implementation
  * @author alexp
  */
 public interface RaceRepository {

@@ -11,7 +11,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- *
+ * Race domain repository - in memory implementation
+ Implemented as singleton. There's no need for singleton implementation if using Spring DI.
  * @author alexp
  */
 public class RaceInMemoryRepository implements RaceRepository {

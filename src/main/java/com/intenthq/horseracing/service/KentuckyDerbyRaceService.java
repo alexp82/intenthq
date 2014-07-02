@@ -20,7 +20,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- *
+ * Kentucky Derby Race service implementation
+ Implemented as singleton. There's no need for singleton implementation if using Spring DI.
+ The raceRepository would be injected using the Spring context.
  * @author alexp
  */
 public class KentuckyDerbyRaceService implements RaceService {
