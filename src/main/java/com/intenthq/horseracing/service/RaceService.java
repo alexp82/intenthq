@@ -37,9 +37,16 @@ public interface RaceService {
     boolean updateRace(BallThrowCommand command);
 
     /**
-     Display the results for a finished race
+     Returns true if the race identified by raceId is over
      @param raceId
-     @return formatted results for a finished race
+     @return true if the race is over
+     */
+    boolean isRaceOver(String raceId);
+
+    /**
+     Display the results for a race
+     @param raceId
+     @return formatted results for a race
      */
     String displayResults(String raceId);
 }

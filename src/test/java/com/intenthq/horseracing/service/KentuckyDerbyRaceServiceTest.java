@@ -65,7 +65,7 @@ public class KentuckyDerbyRaceServiceTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testOrganize() {
+    public void testOrganizeIllegalArguments() {
         System.out.println("organize");
         OrganizeRaceCommand command = new OrganizeRaceCommand(null, null, null);
         String raceId = raceService.organize(command);
@@ -79,10 +79,7 @@ public class KentuckyDerbyRaceServiceTest {
     public void testInitiateRace() {
         System.out.println("initiateRace");
         InitiateRaceCommand command = new InitiateRaceCommand(RACEID, new String[]{"Sydney"});
-        KentuckyDerbyRaceService instance = null;
-        boolean expResult = false;
-        boolean result = instance.initiateRace(command);
-        assertEquals(expResult, result);
+        Assert.assertTrue(raceService.initiateRace(command));
     }
 
     /**
@@ -91,11 +88,8 @@ public class KentuckyDerbyRaceServiceTest {
     @Test
     public void testUpdateRace() {
         System.out.println("updateRace");
-        BallThrowCommand command = null;
-        KentuckyDerbyRaceService instance = null;
-        boolean expResult = false;
-        boolean result = instance.updateRace(command);
-        assertEquals(expResult, result);
+        BallThrowCommand command = new BallThrowCommand(RACEID, 1, 5);
+        Assert.assertTrue(raceService.updateRace(command));
     }
 
     /**

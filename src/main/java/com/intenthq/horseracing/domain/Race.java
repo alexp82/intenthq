@@ -55,7 +55,7 @@ public class Race extends AssertionConcern {
         return true;
     }
 
-    public boolean updateRace(Integer lane, HoleType hole) {
+    public void updateRace(Integer lane, HoleType hole) {
         assertPositiveInteger(lane, Race.class.getSimpleName() + " - updateRace: lane is mandatory!");
         if (hole == null) {
             throw new IllegalArgumentException("Setting the hole is mandatory!");
@@ -63,20 +63,17 @@ public class Race extends AssertionConcern {
         if (!holeTypes.contains(hole)) {
             throw new IllegalArgumentException("The Hole " + hole + " is not specified for this race!");
         }
+        if (lanesStatus == null || lanesStatus.isEmpty()) {
+            throw new IllegalStateException("The race is not initialized!");
+        }
         if (lanesStatus.get(lane) == null) {
             System.out.println("Could not find a horse on lane " + lane + "!");
-            return true;
-        }
-        if (isRaceOver()) {
-            return false;
-        } else {
+        } else if (!isRaceOver()) {
             lanesStatus.get(lane).updateYards(hole.getYards());
             if (lanesStatus.get(lane).getYards() >= length) {
                 raceOver = true;
-                return false;
             }
         }
-        return true;
     }
 
     public List<HorseRaceStatus> results() {

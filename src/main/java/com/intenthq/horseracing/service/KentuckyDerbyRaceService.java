@@ -106,7 +106,8 @@ public class KentuckyDerbyRaceService implements RaceService {
         try {
             Race race = this.raceRepository().getRace(command.getRaceId());
             if (!race.isRaceOver()) {
-                return race.updateRace(command.getLane(), HoleType.fromInteger(command.getNoOfYards()));
+                race.updateRace(command.getLane(), HoleType.fromInteger(command.getNoOfYards()));
+                return true;
             } else {
                 return false;
             }
@@ -117,24 +118,31 @@ public class KentuckyDerbyRaceService implements RaceService {
     }
 
     @Override
+    public boolean isRaceOver(String raceId) {
+        try {
+            Race race = this.raceRepository().getRace(raceId);
+            return race.isRaceOver();
+        } catch (RaceNotFoundException ex) {
+            System.out.println(ex.getMessage());
+            return false;
+        }
+    }
+
+    @Override
     public String displayResults(String raceId) {
         try {
             Race race = this.raceRepository().getRace(raceId);
-            if (!race.isRaceOver()) {
-                return "Race is not over yet!";
-            } else {
-                StringBuilder sb = new StringBuilder("Position, Lane, Horse name\n");
-                int i = 0;
-                for (HorseRaceStatus laneStatus : race.results()) {
-                    sb.append(++i).append(", ");
-                    sb.append(laneStatus.getLaneNumber()).append(", ");
-                    sb.append(laneStatus.getHorse().getName());
-                    if (i < race.results().size()) {
-                        sb.append("\n");
-                    }
+            StringBuilder sb = new StringBuilder("Position, Lane, Horse name\n");
+            int i = 0;
+            for (HorseRaceStatus laneStatus : race.results()) {
+                sb.append(++i).append(", ");
+                sb.append(laneStatus.getLaneNumber()).append(", ");
+                sb.append(laneStatus.getHorse().getName());
+                if (i < race.results().size()) {
+                    sb.append("\n");
                 }
-                return sb.toString();
             }
+            return sb.toString();
         } catch (RaceNotFoundException ex) {
             return ex.getMessage();
         }
