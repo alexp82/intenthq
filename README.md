@@ -19,12 +19,13 @@ Point your browser to [http://localhost:8080/horse-racing](http://localhost:8080
 The application was modeled with a layered architecture in mind. An application service (RaceService) was designed to allow clients to organize races, assign horses to a race, run a race and display results during and after the race. The service accepts commands, commands' attributes are not strongly typed as this service could be exported as REST (only using basic types).
 
 ### Domain Layer
-The Domain Layer contains the real business logic, but does not contain any infrastructure specific code. The infrastructure specific implementation is provided by the Infrastructure Layer. 
+- The Domain Layer contains the real business logic, but does not contain any infrastructure specific code. The infrastructure specific implementation is provided by the Infrastructure Layer. 
 
 ### Application Layer
 - The Application Layer takes commands from the Client Layer and translates these commands to use case invocations on the domain layer. 
 - The Application Layer also provides transaction control for business operations (not implemented here). 
 - The Application layer is responsible to translate Aggregate data into the client specific presentation model 
+- Commands' attributes are not strongly typed as this service will be consumed by Client Layer which could be implemented as a REST service
 - The return type of initializeRace and updateRace of RaceService is boolean, although in a real scenario we might use a response object with the status of the execution of the command, command id, and reason of failure if any.
 - Spring @Service, @Repository annotations were not used. To simulate the default behaviour of spring beans I've implemented the Repository and Service as Singletons. In Spring environment, we would have used DI.
 
