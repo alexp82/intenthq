@@ -49,10 +49,15 @@ public class Race extends AssertionConcern {
         if (laneHorses.size() > maxNoOfLanes) {
             throw new IllegalArgumentException("Too many horses. Maximum allowed number of horses is " + maxNoOfLanes);
         }
-        for (Integer lane : laneHorses.keySet()) {
-            lanesStatus.put(lane, new HorseRaceStatus(lane, laneHorses.get(lane)));
+        if (isRaceOver()) {
+            System.out.println("Race cannot be initialized! Race is already over!");
+            return false;
+        } else {
+            for (Integer lane : laneHorses.keySet()) {
+                lanesStatus.put(lane, new HorseRaceStatus(lane, laneHorses.get(lane)));
+            }
+            return true;
         }
-        return true;
     }
 
     public void updateRace(Integer lane, HoleType hole) {
@@ -67,7 +72,7 @@ public class Race extends AssertionConcern {
             throw new IllegalStateException("The race is not initialized!");
         }
         if (lanesStatus.get(lane) == null) {
-            System.out.println("Could not find a horse on lane " + lane + "!");
+            System.out.println("WARN: Could not find a horse on lane " + lane + "!");
         } else if (!isRaceOver()) {
             lanesStatus.get(lane).updateYards(hole.getYards());
             if (lanesStatus.get(lane).getYards() >= length) {
@@ -78,23 +83,21 @@ public class Race extends AssertionConcern {
 
     public List<HorseRaceStatus> results() {
         if (lanesStatus == null || lanesStatus.isEmpty()) {
-            throw new IllegalStateException("Lanes should be configured");
+            throw new IllegalStateException("Lanes should be configured, race should be initialized!");
         }
         List<HorseRaceStatus> lanes = new ArrayList<>();
-        if (isRaceOver()) {
-            lanes.addAll(lanesStatus.values());
-            Collections.sort(lanes, Collections.reverseOrder(new Comparator<HorseRaceStatus>() {
+        lanes.addAll(lanesStatus.values());
+        Collections.sort(lanes, Collections.reverseOrder(new Comparator<HorseRaceStatus>() {
 
-                @Override
-                public int compare(HorseRaceStatus o1, HorseRaceStatus o2) {
-                    if (o1 != null && o2 != null && o1.getYards() != null && o2.getYards() != null) {
-                        return o1.getYards().compareTo(o2.getYards());
-                    }
-                    return 0;
+            @Override
+            public int compare(HorseRaceStatus o1, HorseRaceStatus o2) {
+                if (o1 != null && o2 != null && o1.getYards() != null && o2.getYards() != null) {
+                    return o1.getYards().compareTo(o2.getYards());
                 }
+                return 0;
+            }
 
-            }));
-        }
+        }));
         return lanes;
     }
 
@@ -104,6 +107,10 @@ public class Race extends AssertionConcern {
 
     public String raceId() {
         return raceId;
+    }
+
+    public void endRace() {
+        raceOver = true;
     }
 
 }

@@ -11,7 +11,9 @@ import java.util.Map;
 import java.util.Set;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -50,13 +52,14 @@ public class RaceTest {
      * Test of initiateRace method, of class Race.
      */
     @Test
-    public void testInitiateRace() {
+    public void testInitiateRaceSuccessful() {
         System.out.println("initiateRace");
         Map<Integer, Horse> laneHorses = new LinkedHashMap<>();
         laneHorses.put(1, new Horse("Sydney"));
         laneHorses.put(3, new Horse("Melbourne"));
         Race race = new Race(RACE_ID, HOLE_TYPES, MAX_NO_OF_LANES, FURLONG);
-        Assert.assertTrue(race.initiateRace(laneHorses));
+        race.initiateRace(laneHorses);
+        assertEquals(2, race.results().size());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -64,7 +67,7 @@ public class RaceTest {
         System.out.println("initiateRace");
         Map<Integer, Horse> laneHorses = new LinkedHashMap<>();
         Race race = new Race(RACE_ID, HOLE_TYPES, MAX_NO_OF_LANES, FURLONG);
-        Assert.assertFalse(race.initiateRace(laneHorses));
+        race.initiateRace(laneHorses);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -86,20 +89,10 @@ public class RaceTest {
         Race race = new Race(RACE_ID, HOLE_TYPES, MAX_NO_OF_LANES, FURLONG);
         Map<Integer, Horse> horses = new LinkedHashMap<>();
         horses.put(1, new Horse("Sydney"));
-        Assert.assertTrue(race.initiateRace(horses));
+        race.initiateRace(horses);
         race.updateRace(1, HoleType.FIVE);
-        Assert.assertFalse(race.isRaceOver());
-        Assert.assertTrue(race.results().isEmpty());
-    }
-
-    /**
-     * Test of updateRace method, of class Race.
-     */
-    @Test(expected = IllegalStateException.class)
-    public void testUpdateRaceLanesNotConfigured() {
-        System.out.println("updateRace");
-        Race race = new Race(RACE_ID, HOLE_TYPES, MAX_NO_OF_LANES, FURLONG);
-        race.updateRace(1, HoleType.FIVE);
+        assertFalse(race.isRaceOver());
+        assertEquals(Integer.valueOf(5), race.results().get(0).getYards());
     }
 
     /**
@@ -111,10 +104,10 @@ public class RaceTest {
         Race race = new Race(RACE_ID, HOLE_TYPES, 1, 5);
         Map<Integer, Horse> horses = new LinkedHashMap<>();
         horses.put(1, new Horse("Sydney"));
-        Assert.assertTrue(race.initiateRace(horses));
+        race.initiateRace(horses);
         race.updateRace(1, HoleType.FIVE);
-        Assert.assertTrue(race.isRaceOver());
-        Assert.assertEquals(1, race.results().size());
+        assertTrue(race.isRaceOver());
+        assertEquals(1, race.results().size());
     }
 
 }

@@ -6,7 +6,7 @@ import com.intenthq.horseracing.command.OrganizeRaceCommand;
 import com.intenthq.horseracing.repository.RaceInMemoryRepository;
 import com.intenthq.horseracing.service.KentuckyDerbyRaceService;
 import com.intenthq.horseracing.service.RaceService;
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -54,7 +54,7 @@ public class RaceScenarioTest {
             updateOk = raceService.updateRace(new BallThrowCommand(raceId, Integer.valueOf(ballthrows[i].split(" ")[0]), Integer.valueOf(ballthrows[i].split(" ")[1])));
             i++;
         }
-        Assert.assertEquals(SAMPLE_OUTPUT, raceService.displayResults(raceId));
+        assertEquals(SAMPLE_OUTPUT, raceService.displayResults(raceId));
     }
 
 }

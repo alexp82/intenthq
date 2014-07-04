@@ -28,7 +28,7 @@ import java.util.Set;
 public class KentuckyDerbyRaceService implements RaceService {
 
     private static RaceService instance = null;
-    private RaceRepository raceRepository;
+    private final RaceRepository raceRepository;
 
     public static RaceService getInstance(RaceRepository raceRepository) {
         if (instance == null) {
@@ -57,11 +57,7 @@ public class KentuckyDerbyRaceService implements RaceService {
     public boolean initiateRace(InitiateRaceCommand command) {
         try {
             Race race = this.raceRepository().getRace(command.getRaceId());
-            if (!race.isRaceOver()) {
-                return race.initiateRace(getParticipants(command.getHorses()));
-            } else {
-                return false;
-            }
+            return race.initiateRace(getParticipants(command.getHorses()));
         } catch (RaceNotFoundException ex) {
             System.out.println(ex.getMessage());
             return false;
@@ -106,8 +102,14 @@ public class KentuckyDerbyRaceService implements RaceService {
         try {
             Race race = this.raceRepository().getRace(command.getRaceId());
             if (!race.isRaceOver()) {
-                race.updateRace(command.getLane(), HoleType.fromInteger(command.getNoOfYards()));
-                return true;
+                try {
+                    race.updateRace(command.getLane(), HoleType.fromInteger(command.getNoOfYards()));
+                    return true;
+                } catch (IllegalStateException ex) {
+                    System.out.println(ex.getMessage());
+                    return false;
+                }
+
             } else {
                 return false;
             }
@@ -143,7 +145,7 @@ public class KentuckyDerbyRaceService implements RaceService {
                 }
             }
             return sb.toString();
-        } catch (RaceNotFoundException ex) {
+        } catch (RaceNotFoundException | IllegalStateException ex) {
             return ex.getMessage();
         }
     }
