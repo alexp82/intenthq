@@ -95,9 +95,6 @@ public class RaceTest {
         assertEquals(Integer.valueOf(5), race.results().get(0).getYards());
     }
 
-    /**
-     * Test of results method, of class Race.
-     */
     @Test
     public void testResultsRaceOver() {
         System.out.println("results");

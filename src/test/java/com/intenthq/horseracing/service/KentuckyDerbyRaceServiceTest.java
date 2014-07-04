@@ -91,9 +91,6 @@ public class KentuckyDerbyRaceServiceTest {
         assertFalse(raceService.initiateRace(command));
     }
 
-    /**
-     * Test of updateRace method, of class KentuckyDerbyRaceService.
-     */
     @Test
     public void testUpdateRaceSuccess() {
         System.out.println("updateRace");
